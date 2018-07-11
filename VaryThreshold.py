@@ -38,17 +38,17 @@ flowparams_new = arange (0, 10, 0.05)
 
 # Getting the H(s) matrices using the Magnus expansion for a variety of threshold values, given in 
 # the parameters.
-meHs = meMain (flowparams_new, 10)
-meHs0 = meMain (flowparams_new, 1)
-meHs1 = meMain (flowparams_new, 0.1)
-meHs2 = meMain (flowparams_new, 0.01)
-meHs3 = meMain (flowparams_new, 0.001)
-meHs4 = meMain (flowparams_new, 0.0001)
-meHs5 = meMain (flowparams_new, 0.00001)
-meHs6 = meMain (flowparams_new, 0.000001)
-meHs7 = meMain (flowparams_new, 0.0000001)
-meHs8 = meMain (flowparams_new, 0.00000001)
-meHs9 = meMain (flowparams_new, 0.000000001)
+meHs = meMain (flowparams_new, 10, 1, 0.5)
+meHs0 = meMain (flowparams_new, 1, 1, 0.5)
+meHs1 = meMain (flowparams_new, 0.1, 1, 0.5)
+meHs2 = meMain (flowparams_new, 0.01, 1, 0.5)
+meHs3 = meMain (flowparams_new, 0.001, 1, 0.5)
+meHs4 = meMain (flowparams_new, 0.0001, 1, 0.5)
+meHs5 = meMain (flowparams_new, 0.00001, 1, 0.5)
+meHs6 = meMain (flowparams_new, 0.000001, 1, 0.5)
+meHs7 = meMain (flowparams_new, 0.0000001, 1, 0.5)
+meHs8 = meMain (flowparams_new, 0.00000001, 1, 0.5)
+meHs9 = meMain (flowparams_new, 0.000000001, 1, 0.5)
 
 # Gets the H(s) matrices using the derivative method 
 srgHs = srgMain (flowparams_new)
