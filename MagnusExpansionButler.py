@@ -11,7 +11,6 @@
 #
 # To-Do
 # 1. Document the code
-# 2. Run a time test
 ##########################################################################################
 
 ##################################################
@@ -38,19 +37,7 @@ from MatrixComparisons import compareSquareMatrices
 #           GLOBAL VARIABLES
 #
 ##################################################
-d = 1
-g = 0.5
-
-H0 =  array ([
-			 [2*d - g, -g/2, -g/2, -g/2, -g/2, 0],
-			 [-g/2, 4*d - g, -g/2, -g/2, 0, -g/2],
-			 [-g/2, -g/2, 6*d - g, 0, -g/2, -g/2],
-			 [-g/2, -g/2, 0, 6*d - g, -g/2, -g/2],
-			 [-g/2, 0, -g/2, -g/2, 8*d - g,  -g/2],
-			 [0, -g/2, -g/2, -g/2, -g/2, 10*d - g]
-			])
 max_n = 1000
-#threshold = 0.0000000001
 
 qm = quantumMechanics ()
 
@@ -68,9 +55,19 @@ def factorial (n):
 	else:
 		return n * factorial (n-1)
 
+def hamiltonian (d, g):
+	return array([
+			[2*d-g, -g/2, -g/2, -g/2, -g/2, 0],
+			[-g/2, 4*d-g, -g/2, -g/2, 0, -g/2],
+			[-g/2, -g/2, 6*d-g, 0, -g/2, -g/2],
+			[-g/2, -g/2, 0, 6*d-g, -g/2, -g/2],
+			[-g/2, 0, -g/2, -g/2, 8*d-g, -g/2],
+			[0, -g/2, -g/2, -g/2, -g/2, 10*d-g]
+		])
 
 
-def magnusExpansion (omega, s, threshold):
+
+def magnusExpansion (omega, s, threshold, H0):
 	# need a 6x6 matrix 
 	omega = reshape (omega, (6, 6))
 	# failsafes so there is no infinite loop
@@ -117,7 +114,7 @@ def magnusExpansion (omega, s, threshold):
 
 
 
-def main (flowparams, threshold):
+def main (flowparams, threshold, d, g):
 	omega0 = array ([
 					[0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
 					[0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
@@ -128,8 +125,8 @@ def main (flowparams, threshold):
 				])
 	omega0 = reshape (omega0, -1)
 	#flowparams = array([0.,0.001,0.01,0.05,0.1, 1., 5., 10.])
-
-	omegas = odeint (magnusExpansion, omega0, flowparams, args=(threshold,))
+	H0 = hamiltonian (d, g)
+	omegas = odeint (magnusExpansion, omega0, flowparams, args=(threshold,H0,))
 	Hs_list = []
 	for omega, s in zip(omegas, flowparams):
 		omega = reshape (omega, (6, 6))
