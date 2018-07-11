@@ -10,9 +10,8 @@
 # code that oertain to linear algebra calculations.
 #
 # To-Do
-# 1. Write the code
-# 2. Document the code
-# 3. Run a time test
+# 1. Document the code
+# 2. Run a time test
 ##########################################################################################
 
 ##################################################
@@ -26,24 +25,34 @@ from LinearAlgebra import quantumMechanics
 from sympy import *
 import numpy as np
 from numpy import array, dot, diag, reshape
-from scipy.linalg import eigvalsh
 from scipy.integrate import odeint
+from fractions import Fraction as Fr
+from sys import exit 
+from math import exp
+from MatrixComparisons import compareSquareMatrices
+
+
 
 ##################################################
 #
 #           GLOBAL VARIABLES
 #
 ##################################################
-d = Symbolic ("d")
-g = Symbolic ("g")
+d = 1
+g = 0.5
 
-H0 = [ [2*d - g, -g/2, -g/2, -g/2, -g/2, 0],
-       [-g/2, 4*d - g, -g/2, -g/2, 0, -g/2],
-       [-g/2, -g/2, 6*d - g, 0, -g/2, -g/2],
-       [-g/2, -g/2, 0, 6*d - g, -g/2, -g/2],
-       [-g/2, 0, -g/2, -g/2, 8*d - g, -g/2],
-       [0, -g/2, -g/2, -g/2, -g/2, 10*d - g]
-     ]
+H0 =  array ([
+			 [2*d - g, -g/2, -g/2, -g/2, -g/2, 0],
+			 [-g/2, 4*d - g, -g/2, -g/2, 0, -g/2],
+			 [-g/2, -g/2, 6*d - g, 0, -g/2, -g/2],
+			 [-g/2, -g/2, 0, 6*d - g, -g/2, -g/2],
+			 [-g/2, 0, -g/2, -g/2, 8*d - g,  -g/2],
+			 [0, -g/2, -g/2, -g/2, -g/2, 10*d - g]
+			])
+max_n = 1000
+#threshold = 0.0000000001
+
+qm = quantumMechanics ()
 
 def bernoulli(n):
 	A= [0] * (n+1)
@@ -57,37 +66,94 @@ def factorial (n):
 	if n == 0:
 		return 1
 	else:
-		return n * facorial (n-1)
+		return n * factorial (n-1)
 
-def magnusExpansion ():
-	omega0 = 0
-	Hd  = diag(diag(H))
-	Hod = H-Hd
-	qm1 = quamtumMechanics (Hd, Hod)
-	eta = qm1.commutator ()
-	qm2 = quantumMechanics (omega0, eta)
-	previous_term = (bernoulli (0) / factorial (0)) * qm2.nestedCommutator (0)
-	threshhold = 0.001
-	delta = 1000
-	total_sum = previous_term
-	n = 1
-	while (threshold < delta):
-		current_term = (bernoulli (n) / factorial (n)) * qm2.nestedCommutator (n)
-		total_sum = total_sum + current_term
-		delta = current_term - previous_term
+
+
+def magnusExpansion (omega, s, threshold):
+	# need a 6x6 matrix 
+	omega = reshape (omega, (6, 6))
+	# failsafes so there is no infinite loop
+	# Needed for commutator (rewrite this part)
+	# Calculates H(s) using the formula H(s) = SUM 1/k! [omega, H(0)]^(k)
+	previous_term = (1/factorial (0)) * qm.nestedCommutator (omega, H0, 0)
+	Hs = previous_term
+	k = 1
+	delta = 10000
+	while (delta > threshold):
+		if (k == max_n):
+			print ("Summation failed to converge to required threshold.")
+			print ("Program will now terminate")
+			exit ()
+		current_term = (1/factorial (k)) * qm.nestedCommutator (omega, H0, k)
+		Hs = Hs + current_term
+		delta = compareSquareMatrices (current_term, previous_term, 6)
 		previous_term = current_term
+		k = k + 1
+	# Calculates eta from H(s) using eta = [Hd, Hod]
+	Hd = diag (diag (Hs))
+	Hod = Hs - Hd
+	eta = qm.commutator(Hd, Hod)
+	# Computes the sum domega/dt = SUM Bn/n! [omega, eta]^(n)
+	previous_term = (bernoulli (0) / factorial (0)) * qm.nestedCommutator (omega, eta, 0)
+	domega_ds = previous_term
+	delta = 10000
+	n = 1
+	while (delta > threshold):
+		if (n == max_n):
+			print ("Summation failed to converge to required threshold.")
+			print ("Program will now terminate")
+			exit ()
+		current_term = (bernoulli (n) / factorial (n)) * qm.nestedCommutator (omega, eta, n)
+		domega_ds = domega_ds + current_term
+		delta = compareSquareMatrices (current_term, previous_term, 6)
+		previous_term = current_term 
 		n = n + 1
-	# turn initial Hamiltonian into a linear array
-	y0  = reshape(H0, -1)                 
-	# flow parameters for snapshot images
-	flowparams = array([0.,0.001,0.01,0.05,0.1, 1., 5., 10.])
-	# integrate flow equations - odeint returns an array of solutions,
-	# which are 1d arrays themselves
-	ys  = odeint(derivative, y0, flowparams, args=(dim,))
-	# reshape individual solution vectors into dim x dim Hamiltonian
-	# matrices
-	Hs  = reshape(ys, (-1, dim,dim))
+	# needs to be returned as a single dimension array for ODE solver
+	domega_ds = reshape (domega_ds, -1)
+	return domega_ds.tolist()
+		
+
+
+
+
+def main (flowparams, threshold):
+	omega0 = array ([
+					[0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+					[0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+					[0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+					[0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+					[0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+					[0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+				])
+	omega0 = reshape (omega0, -1)
+	#flowparams = array([0.,0.001,0.01,0.05,0.1, 1., 5., 10.])
+
+	omegas = odeint (magnusExpansion, omega0, flowparams, args=(threshold,))
+	Hs_list = []
+	for omega, s in zip(omegas, flowparams):
+		omega = reshape (omega, (6, 6))
+		# Needed for commutator (rewrite this part)
+		# Calculates H(s) using the formula H(s) = SUM 1/k! [omega, H(0)]^(k)
+		previous_term = (1/factorial (0)) * qm.nestedCommutator (omega, H0, 0)
+		Hs = previous_term
+		k = 1
+		delta = 10000
+		while (delta > threshold):
+			if (k == max_n):
+				print ("Summation failed to converge to required threshold.")
+				print ("Program will now terminate")
+				exit ()
+			current_term = (1/factorial (k)) * qm.nestedCommutator (omega, H0, k)
+			Hs = Hs + current_term
+			delta = compareSquareMatrices (current_term, previous_term, 6)
+			previous_term = current_term
+			k = k + 1
+		Hs_list.append(Hs)
+	return Hs_list
 	
+
+
 
 
 
