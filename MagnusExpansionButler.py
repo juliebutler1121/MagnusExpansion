@@ -12,13 +12,6 @@
 # 1. Document the code
 #########################################################################
 
-#########################################################################
-# The Magnus Expansion and its Algorithm:
-#
-#
-#########################################################################
-
-
 ##################################################
 #
 #                 IMPORTS
@@ -41,14 +34,24 @@ from sys import exit
 
 ##################################################
 # compareSquareMatrices
-#
-#
+# In order to find the differnce between two square matrices and convert it to a number, the
+# following equation was implemented:
+# delta = SUM_{i=0}^{dim}SUM_{j=0}^{dim} ||x_{ij}|-|y_{ij}||
+# It finds the differnce between two square matrices x and y, each with a dimension on dim.  It
+# does so by calculating the sum of the difference between the corresponding matrix elements.
 ##################################################
 
 ##################################################
 # odeint:
-#
-#
+# An ordinary differential equation solver from the scipy.integrate package.  It is implemented with the
+# following command:
+# y = odeint (func, y0, x, args=(a, b,...))
+# func: a function that calculates and returns dy/dx.  Its arguments must contain y and x, rather or
+#	not they are actually used in the function
+# y0: the initial value of the function y
+# x: an array of values for which values of y need to be calculated for
+# args=(a,b,..): optional.  Additional arguments which need to be passed to func.  Must be in the form 
+#	of  tuple.
 ##################################################
 
 ##################################################
@@ -59,7 +62,6 @@ from sys import exit
 # Sets the maximum number of iterations that a loop can perform.  If the number of iterations reaches
 # the value of man_n, the program terminates with an error message.
 max_iterations = 100
-
 
 ##################################################
 #
@@ -128,13 +130,32 @@ def hamiltonian (d, g):
 			[0, -g/2, -g/2, -g/2, -g/2, 10*d-g]
 		])
 
-
 ##################################################
 #
 #                              mangusExpansion
 #
 ##################################################
 def magnusExpansion (omega, s, threshold, H0):
+	"""
+	Input:
+		omega (a one-dimensional numpy array):  The current value of omega, reshaped from
+			a 6x6 matrix to a one-dimensional array to satisfy the ODE solver.
+		s (a double):  A flow parameter.  Not used in the code but needed for the ODE solver.
+		threshold (a double):  Used for terminating the loops.  Requires the difference between
+			the previous value calcualted by the loop and the current value to be less than the 
+			inputted value of threshold.
+		H0 (a 6x6 numpy matrix): The matrix H(0), which is used to calculate H(s)
+	Output:
+		domega_ds (a one-dimensional numpy array):  The result of finding domega/ds, reshaped
+			into a one-dimensional array to satisfy the ODE solver.
+
+	Performs the Magnus expansion by calculating domega/dt.  It does so by calculating H(s) from
+	omega and H(0) using the formula H(s) = SUM 1/k! [omega, H(0)]^(k).  It then calcualtes
+	eta using the formula eta = [Hd, Hod], where Hd are the diagonal matrix elements of H(s) and 
+	Hod are the off-diagonal matrix elements of H(s).  From there,  domega/ds is calculates using 
+	the formula domega/dt = SUM Bn/n! [omega, eta]^(n) and returns the result, after reshaping it
+	into a one-dimensional array to satisfy the ODE solver.
+	"""
 	# Reshapes the inputed omega array from a single dimension to a 6x6 matrix
 	omega = reshape (omega, (6, 6))
 
@@ -179,11 +200,19 @@ def magnusExpansion (omega, s, threshold, H0):
 	domega_ds = reshape (domega_ds, -1)
 	return domega_ds.tolist()
 		
-
-
-
-
 def main (flowparams, threshold, d, g):
+	"""
+	Input:
+		flowparams (a numpy array):  The values of s for which Hamiltonians need to be 
+			calculated for.
+		threshold (a double):   Used for terminating the loops.  Requires the difference between
+			the previous value calcualted by the loop and the current value to be less than the 
+			inputted value of threshold.
+		d (a double):  The energy level spacing
+		g (a double): The interaction strength
+	"""
+
+	# The initial value of omega for the ODE solver, reshaped into a one-dimensional array
 	omega0 = array ([
 					[0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
 					[0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
@@ -193,14 +222,19 @@ def main (flowparams, threshold, d, g):
 					[0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
 				])
 	omega0 = reshape (omega0, -1)
-	#flowparams = array([0.,0.001,0.01,0.05,0.1, 1., 5., 10.])
+
+	#Caclulation of H(0)
 	H0 = hamiltonian (d, g)
+
+	# Calculates omega(s) using the ODE solver, returns one matrix per flow parameter
 	omegas = odeint (magnusExpansion, omega0, flowparams, args=(threshold,H0,))
+
+	# Converts the values of omega(s) to H(s) using the formula 
+	# H(s) = SUM 1/k! [omega, H(0)]^(k).  Does so for each flow parameter.
 	Hs_list = []
 	for omega, s in zip(omegas, flowparams):
 		omega = reshape (omega, (6, 6))
-		# Needed for commutator (rewrite this part)
-		# Calculates H(s) using the formula H(s) = SUM 1/k! [omega, H(0)]^(k)
+
 		previous_term = (1/factorial (0)) * nestedCommutator (omega, H0, 0)
 		Hs = previous_term
 		k = 1
@@ -215,7 +249,9 @@ def main (flowparams, threshold, d, g):
 			delta = compareSquareMatrices (current_term, previous_term, 6)
 			previous_term = current_term
 			k = k + 1	
+
 		Hs_list.append(Hs)
+	
 	return Hs_list
 	
 
