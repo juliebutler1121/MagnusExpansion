@@ -52,7 +52,7 @@ def compareSquareMatrices (x, y, dim):
 #
 #################################################
 def compareSquareMatricesByElement (x, y, dim):
-		"""
+	"""
 	Input:
 		x (a matrix): a square matrix of dimension dim
 		y (a matrix): a square matrix of dimension dim.  Must be the same size as x.
@@ -64,10 +64,10 @@ def compareSquareMatricesByElement (x, y, dim):
 	patterns between two sets of matrix data.
 	"""
 	total_difference = []
-		for i in range (0, dim):
-			row_difference = []
-			for j in range (0, dim):
-				row_difference.append (abs (abs (x[i][j]) - abs (y[i][j])))
-			total_difference.append (row_difference)
+	for i in range (0, dim):
+		row_difference = []
+		for j in range (0, dim):
+			row_difference.append (abs (abs (x[i][j]) - abs (y[i][j])))
+		total_difference.append (row_difference)
 	return total_difference
 				
