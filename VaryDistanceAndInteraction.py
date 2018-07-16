@@ -106,7 +106,7 @@ dot_size = 4
 figure (1)
 
 #################################################
-#                                 Subplot 1
+#                                 Subplot 1.1
 # Energy level spacing vs discrepancy for energy level spacing values
 # between 0.0 and 2.0 with a spacing of 0.2 and flow parameters of 
 # 0.0, 0.001, 0.01, 0.1, and 5.0
@@ -134,7 +134,7 @@ ylabel('Discrepancy', fontsize=16, fontweight='bold')
 legend (fontsize = 14)
 
 #################################################
-#                                 Subplot 2
+#                                 Subplot 1.2
 # Energy level spacing vs discrepancy for energy level spacing values
 # between 0.0 and 2.0 with a spacing of 0.2 and flow parameters of 
 # 0.0, 0.001, 0.01, 0.1, and 5.0
@@ -165,12 +165,12 @@ ylabel('Discrepancy', fontsize=16, fontweight='bold')
 figure (2)
 
 #################################################
-#                                 Subplot 1
+#                                 Subplot 2.1
 # Interaction strength vs discrepancy for energy level spacing values
 # between -1.0 and 1.0 with a spacing of 0.2 and flow parameters of 
 # 0.0, 0.001, 0.01, 0.1, and 5.0
 #################################################
-subplot (211)
+subplot (311)
 # Plot the data
 plot (g_range, discrepancy_g_0, 'b-o', linewidth=dot_size, label='Flow Parameter: 0.0')
 plot (g_range, discrepancy_g_0_001, 'g-o', linewidth=dot_size, label='Flow Parameter: 0.001')
@@ -193,17 +193,41 @@ ylabel('Discrepancy', fontsize=16, fontweight='bold')
 legend (fontsize = 14)
 
 #################################################
-#                                 Subplot 2
+#                                 Subplot 2.2
 # Interaction strength vs discrepancy for energy level spacing values
 # between -1.0 and 1.0 with a spacing of 0.2 and flow parameters of 
 # 0.0, 0.001, 0.01, 0.1, and 5.0
 #################################################
-subplot (212)
+subplot (312)
 # Plot the data
 plot (g_range, discrepancy_g_0, 'b-o', linewidth=dot_size, label='Flow Parameter: 0.0')
 plot (g_range, discrepancy_g_0_001, 'g-o', linewidth=dot_size, label='Flow Parameter: 0.001')
 plot (g_range, discrepancy_g_0_01, 'r-o', linewidth=dot_size, label='Flow Parameter: 0.01')
 plot (g_range, discrepancy_g_0_1, 'm-o', linewidth=dot_size, label='Flow Parameter: 0.1')
+# Change size and font of tick labels
+fontsize = 12
+ax = gca()
+for tick in ax.xaxis.get_major_ticks():
+    tick.label1.set_fontsize(fontsize)
+    tick.label1.set_fontweight('bold')
+for tick in ax.yaxis.get_major_ticks():
+    tick.label1.set_fontsize(fontsize)
+    tick.label1.set_fontweight('bold')
+# Set the axis labels
+xlabel('Interaction Strength', fontsize=16, fontweight='bold')
+ylabel('Discrepancy', fontsize=16, fontweight='bold')
+
+#################################################
+#                                 Subplot 2.3
+# Interaction strength vs discrepancy for energy level spacing values
+# between -1.0 and 1.0 with a spacing of 0.2 and flow parameters of 
+# 0.0, 0.001, 0.01
+#################################################
+subplot (313)
+# Plot the data
+plot (g_range, discrepancy_g_0, 'b-o', linewidth=dot_size, label='Flow Parameter: 0.0')
+plot (g_range, discrepancy_g_0_001, 'g-o', linewidth=dot_size, label='Flow Parameter: 0.001')
+plot (g_range, discrepancy_g_0_01, 'r-o', linewidth=dot_size, label='Flow Parameter: 0.01')
 # Change size and font of tick labels
 fontsize = 12
 ax = gca()
