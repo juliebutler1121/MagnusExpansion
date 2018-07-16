@@ -184,9 +184,7 @@ def derivative(y, t, dim):
 # Main program
 #------------------------------------------------------------------------------
 
-def main(flowparams):
-  g     = 0.5
-  delta = 1
+def main(flowparams, delta, g):
 
   H0    = Hamiltonian(delta, g)
   dim   = H0.shape[0]
