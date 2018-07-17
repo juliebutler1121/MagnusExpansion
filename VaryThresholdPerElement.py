@@ -11,10 +11,6 @@
 
 ########################################################################
 # Function Outline:
-# ratio_matrix (matrix): Return a matrix such that each element has been divided by the global maximum of 
-#   the matrix
-# make_single_figure (figure_number, discrepancy_list, graph_title, cmap, norm): Makes the four
-#   subplots for a single threshold value
 ########################################################################
 
 #################################################
@@ -31,72 +27,8 @@ from MagnusExpansionButler import main as magnus_expansion_main
 from srg_pairing import main as srg_main
 from MatrixComparisons import compare_square_matrices_by_element as diff
 from GraphingCapabilities import set_up_graph
+from GraphingCapabilities import make_4_subplots_per_figure as make_single_figure
 
-#################################################
-#
-#                         ratio_matrix
-#
-#################################################
-def ratio_matrix (matrix):
-    """
-    Return a matrix such that each element has been divided by the global maximum of 
-    the matrix.
-    Input:
-        matrix (a matrix): The starting matrix.
-    Output:
-        matrix (a matrix): The matrix after the ratio calcualtions have been performed
-    """
-    # Find the maximum value
-    local_maxes = [max(sub_array) for sub_array in matrix]
-    global_max = max (local_maxes)
-    # Convert the elements of the matrix to ratios
-    for i in range (0, 6):
-    	for j in range (0, 6):
-    		matrix[i][j] = matrix[i][j] / global_max
-    return matrix
-
-#################################################
-#
-#                      make_single_figure
-#
-#################################################
-def make_single_figure (figure_number, discrepancy_list, graph_title, cmap, norm):
-    """
-    Makes the four subplots for a single threshold value
-    Input:
-        figure_number (an integer): the number of the figure
-        discrepancy_list (an array): Contains the data to be graphed
-        graph_title (a string): The title to be printed at the top of the graph
-        cmap and norm (matplotlib objects): handle the color mapping 
-    """
-    figure (figure_number)
-    # Set the figure title
-    suptitle (graph_title, fontsize=40, fontweight='bold')
-    # Titles for the subplots
-    subplot_titles = ["Flow Parameter: 0.05", "Flow Parameter: 0.3", "Flow Parameter: 1.0",
-                            "Flow Parameter: 5.0"]
-    index_list = [1, 6, 20, 100]
-    # Setting up the four subplots
-    gs = plt.GridSpec(2, 2)
-    for i in range (0, 2):
-        iter_number = 2*i
-        for j in range (0, 2):
-            # Select the correct subplot
-            plt.subplot (gs [i, j])
-            # Set the subplot title
-            title (subplot_titles [iter_number], fontsize=20, fontweight='bold')
-            # Collect the data
-            matrix = discrepancy_list [index_list [iter_number]]
-            matrix = ratio_matrix (matrix)
-            # Plot the matrix using the created color map
-            imshow(matrix, interpolation='nearest', 
-                     extent=[0.5, 0.5+6, 0.5, 0.5+6],
-                     cmap=cmap,
-            		 norm=norm)
-            # Create the color bar legend
-            colorbar()
-            set_up_graph ("", "", False)
-            iter_number += 1
 
 
 #################################################
@@ -169,36 +101,40 @@ cmap = mpl.colors.ListedColormap(['0.0', '0.1', '0.2', '0.3', '0.4', '0.5', '0.6
 							'0.8', '0.9', '1.0'])
 bounds = [0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0]
 norm = mpl.colors.BoundaryNorm(bounds, cmap.N)
+# Titles for the subplots
+subplot_titles = ["Flow Parameter: 0.05", "Flow Parameter: 0.3", "Flow Parameter: 1.0",
+                            "Flow Parameter: 5.0"]
+index_list = [1, 6, 20, 100]
 
 #################################################
 #                              Figure 1
 #                       Threshold: 10.0
 #################################################
-make_single_figure (1, discrepancy10, "Threshold: 10.0", cmap, norm)
+make_single_figure (1, discrepancy10, "Threshold: 10.0", subplot_titles, index_list, cmap, norm)
 
 #################################################
 #                                Figure 2
 #                           Threshold: 1.0
 #################################################
-make_single_figure (2, discrepancy1, "Threshold: 1.0", cmap, norm)
+make_single_figure (2, discrepancy1, "Threshold: 1.0", subplot_titles, index_list, cmap, norm)
 
 #################################################
 #                                Figure 3
 #                           Threshold: 0.1
 #################################################
-make_single_figure (3, discrepancye1, "Threshold: 0.1", cmap, norm)
+make_single_figure (3, discrepancye1, "Threshold: 0.1", subplot_titles, index_list, cmap, norm)
 
 #################################################
 #                                Figure 4
 #                           Threshold: 0.01
 #################################################
-make_single_figure (4, discrepancye2, "Threshold: 0.01", cmap, norm)
+make_single_figure (4, discrepancye2, "Threshold: 0.01", subplot_titles, index_list, cmap, norm)
 
 #################################################
 #                                Figure 5
 #                           Threshold: 0.001
 #################################################
-make_single_figure (5, discrepancye3, "Threshold: 0.001", cmap, norm)
+make_single_figure (5, discrepancye3, "Threshold: 0.001", subplot_titles, index_list, cmap, norm)
 
 #################################################
 #                                         Show
