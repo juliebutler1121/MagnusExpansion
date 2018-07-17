@@ -9,19 +9,18 @@
 #########################################################################
 
 #########################################################################
-# METHODS:
+# Function Outline:
 # commutator (x, y): computes the commutator of the numpy arrays x and y.
-# nestedCommutator (x, y, n): computes the nested commutator to the nth degree of the numpy 
-#	arrays x and y
+# nested_commutator (x, y, n): computes the nested commutator to the nth degree of the 
+# numpy arrays x and y
 #########################################################################
 ##################################################
 #
 #                 IMPORTS
 #
 ##################################################
-# Allows for the use of effecient arrays and must basic linear algebra calculations
+# Third-Party Imports
 import numpy as np 
-# Commonly used methods from the numpy library 
 from numpy import dot
 
 ##################################################
@@ -31,25 +30,23 @@ from numpy import dot
 ##################################################
 def commutator (x, y):
 	"""	
+	 Performs a commutator on the numpy arrays x and y.
 	Input:
 		x (a numpy array): The first array that the nested commutator is to be performed on.
 		y (a numpy array): Thesecond array that the nested commutator is to be performed on.
 	Output:
-		Unnamed (depends on input):  The results of performing the commutator on x and y
-
-	 Performs a commutator on the numpy arrays x and y.  The commutator of A and B is defined 
-	as [A, B] = AB - BA.  The order of the inputs could matter, depending on the whether the inputs
-	are matrices or just vectors.  
+		Unnamed (depends on input):  The results of performing the commutator on x and y  
 	"""
 	return dot (x, y) - dot (y, x)
 
 ##################################################
 #
-#              nestedCommutator
+#              nested_commutator
 #
 ##################################################
-def nestedCommutator (x, y, n):
+def nested_commutator (x, y, n):
 	"""
+    Performs a nested commutator with n iterations on the numpy arrays x and y.
 	Input:
 		x (a numpy array):  The first array that the nested commutator is to be performed
 			on.
@@ -59,14 +56,10 @@ def nestedCommutator (x, y, n):
 			is to be performed.
 	Output:
 		Unnamed (depends on input): The result of performing the nested commutator n
-			times on class level numpy arrays a and b.
-			
-	Performs a nested commutator with n iterations on the numpy arrays x and y.  For the 
-	nested commutator [a, b]^(n) = [a, [a, b]^(n-1)] and [a, b]^(0) = b.  The order of x and y
-	is important as it will affect the results.
+			times on class level numpy arrays x and y.
 	"""
 	if n == 0:
 		return y
 	else:
-		return commutator (x, nestedCommutator (x, y, n-1))
+		return commutator (x, nested_commutator (x, y, n-1))
 		
