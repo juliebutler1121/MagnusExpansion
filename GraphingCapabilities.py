@@ -13,6 +13,15 @@
 # set_up_graph (x_label, y_label, is_legend): Format the axes of the graph and inserts 
 #   legend if wanted.
 ########################################################################
+
+#################################################
+#
+#                                 IMPORTS
+#
+#################################################
+# Third-Party Imports
+from pylab import *
+
 def set_up_graph (x_label, y_label, is_legend):
     """
     Format the axes of the graph and inserts legend if wanted.
