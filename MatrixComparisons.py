@@ -14,6 +14,8 @@
 #    delta = SUM_{i = 0}^d SUM_{j=0}^d ||xij|-|yij||
 # compare_square_matrices_by_element (x, y, dim): Calcualtes the difference between two square 
 #   matrices by element.
+# ratio_matrix (matrix): Return a matrix such that each element has been divided by the global maximum of 
+#   the matrix
 #########################################################################
 
 #################################################
@@ -60,4 +62,27 @@ def compare_square_matrices_by_element (x, y, dim):
             row_difference.append (abs (abs (x[i][j]) - abs (y[i][j])))
         total_difference.append (row_difference)
     return total_difference
+
+#################################################
+#
+#                         ratio_matrix
+#
+#################################################
+def ratio_matrix (matrix):
+    """
+    Return a matrix such that each element has been divided by the global maximum of 
+    the matrix.
+    Input:
+        matrix (a matrix): The starting matrix.
+    Output:
+        matrix (a matrix): The matrix after the ratio calcualtions have been performed
+    """
+    # Find the maximum value
+    local_maxes = [max(sub_array) for sub_array in matrix]
+    global_max = max (local_maxes)
+    # Convert the elements of the matrix to ratios
+    for i in range (0, 6):
+    	for j in range (0, 6):
+    		matrix[i][j] = matrix[i][j] / global_max
+    return matrix
 				
