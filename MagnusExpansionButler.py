@@ -35,8 +35,8 @@ from numpy import array, dot, diag, reshape
 from scipy.integrate import odeint
 
 # Local Imports
-from LinearAlgebra import commutator, nestedCommutator 
-from MatrixComparisons import compareSquareMatrices
+from LinearAlgebra import commutator, nested_commutator 
+from MatrixComparisons import compare_square_matrices
 
 ##################################################
 #
@@ -125,7 +125,7 @@ def calculate_h_from_omega (omega, H0, threshold):
         Hs (a matrix): the value of H(s) calculated using omega(s) and H(0)
     """
     # Calculates H(s) using the formula H(s) = SUM 1/k! [omega, H(0)]^(k)
-    previous_term = (1/factorial (0)) * nestedCommutator (omega, H0, 0)
+    previous_term = (1/factorial (0)) * nested_commutator (omega, H0, 0)
     Hs = previous_term
     k = 1
     delta = 10000
@@ -134,9 +134,9 @@ def calculate_h_from_omega (omega, H0, threshold):
             print ("Summation failed to converge to required threshold.")
             print ("Program will now terminate")
             exit ()
-        current_term = (1/factorial (k)) * nestedCommutator (omega, H0, k)
+        current_term = (1/factorial (k)) * nested_commutator (omega, H0, k)
         Hs = Hs + current_term
-        delta = compareSquareMatrices (current_term, previous_term, 6)
+        delta = compare_square_matrices (current_term, previous_term, 6)
         previous_term = current_term
         k = k + 1
     return Hs
@@ -170,7 +170,7 @@ def magnus_expansion (omega, s, threshold, H0):
     eta = commutator(Hd, Hod)
 
     # Computes the sum domega/dt = SUM Bn/n! [omega, eta]^(n)
-    previous_term = (bernoulli (0) / factorial (0)) * nestedCommutator (omega, eta, 0)
+    previous_term = (bernoulli (0) / factorial (0)) * nested_commutator (omega, eta, 0)
     domega_ds = previous_term
     delta = 10000
     n = 1
@@ -179,9 +179,9 @@ def magnus_expansion (omega, s, threshold, H0):
             print ("Summation failed to converge to required threshold.")
             print ("Program will now terminate")
             exit ()
-        current_term = (bernoulli (n) / factorial (n)) * nestedCommutator (omega, eta, n)
+        current_term = (bernoulli (n) / factorial (n)) * nested_commutator (omega, eta, n)
         domega_ds = domega_ds + current_term
-        delta = compareSquareMatrices (current_term, previous_term, 6)
+        delta = compare_square_matrices (current_term, previous_term, 6)
         previous_term = current_term 
         n = n + 1
 
