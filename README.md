@@ -6,11 +6,9 @@ particle states and four particles.  Both a Python and a C++ implementation of t
 Expansion will be shown.  The results from the calculations will also be presented below.
 The derivative method for solving the IMSRG problem will be used as a comparison.
 
-## In-Medium Similarity Renormalization Group Theory
-
-### Derivative Method
-
 ## Pairing Model 
+
+## Derivative Method
 
 ## Magnus Expansion
 
