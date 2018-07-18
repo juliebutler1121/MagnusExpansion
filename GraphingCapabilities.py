@@ -69,6 +69,8 @@ def make_4_subplots_per_figure (figure_number, data_list, graph_title,
             to access the data
         cmap and norm (matplotlib objects): handle the color mapping 
     """
+    fig = plt.figure()
+    fig.patch.set_facecolor('white')
     figure (figure_number)
     # Set the figure title
     suptitle (graph_title, fontsize=40, fontweight='bold')
