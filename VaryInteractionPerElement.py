@@ -82,6 +82,7 @@ subplot_titles = ["Flow Parameter: 0.05", "Flow Parameter: 0.1", "Flow Parameter
                             "Flow Parameter: 5.0"]
 index_list = [0, 1, 2, 3]
 
+
 #################################################
 #                              Figure 1
 #                  Interaction Strength: -1.0
